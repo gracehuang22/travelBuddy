@@ -13,17 +13,15 @@
       }
     };
 
+    var yelpCatJson;
+
     function load(keywords,location) {
-      var hasBusinesses = false;
-      console.log("load");
       $keywords = keywords;
       $location = location;
 
       var infoWindow = new google.maps.InfoWindow;
-
-      // Change this depending on the name of your PHP file
+      getCategories();
       downloadUrl("yelpAPI.php", $location, $keywords, function(data) {
-        console.log(data.responseText);
         var json = JSON.parse(data.responseText);
         var jsonArr = json.businesses;
         if (jsonArr.length > 0){
@@ -45,17 +43,18 @@
           });
         }
         for (var i = 0; i < jsonArr.length; i++) {
-          hasBusinesses = true;
+       
           var name = jsonArr[i].name;
           console.log("name:" + name);
           var address = jsonArr[i].location.display_address;
           console.log("categories[0][0]: " +jsonArr[i].categories[0][0]);
-          var type = getCategories(jsonArr[i].categories[0][0]);
+          
+          var type = findParents(jsonArr[i].categories[0][0]);
           console.log("type " + type);
           var point = new google.maps.LatLng(
               jsonArr[i].location.coordinate.latitude,
               jsonArr[i].location.coordinate.longitude);
-          var html = "<b>" + i + ": " +name + "</b> <br/>" + address;
+          var html = "<b>" + i + ": " +name + "</b> <br/>" + address + "<br/>" + type;
           var icon = customIcons[type] || {};
 
           var marker = new google.maps.Marker({
@@ -111,20 +110,22 @@
       request.send(null);
     }
 
-    function getCategories(type) {
+    function getCategories() {
       var url = 'yelp_categories.json';
       getUrl(url,function(data){
-        var json = JSON.parse(data.responseText);
-        console.log("response Text: " +data.responseText);
-        for (var i = 0; i < json.length; i++) {
-          console.log("title: " + json[i].title);
-          if (json[i].title == type) {
-            console.log("parents: " + json[i].parents[0]);
-            return json[i].parents[0];
-          }
+        window.yelpCatJson = JSON.parse(data.responseText);
+        console.log("response Text: "  + window.yelpCatJson);
+      });
+    }
+
+    function findParents(type){
+      for (var i = 0; i < window.yelpCatJson.length; i++) {
+        console.log("title: " + window.yelpCatJson[i].title);
+        if (window.yelpCatJson[i].title == type) {
+          console.log("parents: " + window.yelpCatJson[i].parents[0]);
+          return window.yelpCatJson[i].parents[0];
         }
-        
-      })
+      }
     }
 
     //]]>
