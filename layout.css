@@ -1,0 +1,27 @@
+.titles {
+	text-align: center;
+}
+
+#categories {
+	display: inline-block;
+}
+
+#map{
+	display: block;
+	margin: auto;
+}
+
+.cat-elem {
+	text-align: center;
+	display: inline-block;
+}
+
+.on {
+	color: rgb(173,216,230);
+}
+
+#search {
+	display: block;
+	margin: auto;
+	text-align: center;
+}
